@@ -1,4 +1,6 @@
 import pygame as pg
+from pygame.locals import *
+from sys import exit
 
 
 class Jogador:
@@ -29,3 +31,45 @@ class Jogador:
     
     def update(self):
         pg.draw.rect(self.window, self.cor, (self.x, self.y, self.largura, self.altura))
+
+# ---------------------- Tela de escolha ----------------------
+
+class Tela_de_escolha:
+    def __init__(self, window):
+        self.window = window
+        self.fonte = pg.font.SysFont('arial', 50)
+        self.opcao = '1'
+        self.distancia_opcoes = 300
+        self.triangulo_1 = [(300,600), (380,600), (340, 540)]
+        self.triangulo_2= [(580, 600), (660, 600), (620, 540)]
+        self.triangulo_3 = [(860, 600), (940, 600), (900, 540)]
+
+    def movimentacao_escolha(self, evento):
+            if evento.type == QUIT:
+                self.opcao = 'sair'
+            if evento.type == KEYDOWN:
+                if evento.key == K_a:
+                    if self.opcao == '2':
+                        self.opcao = '1'
+                    elif self.opcao == '3':
+                        self.opcao = '2'
+                if evento.key == K_d:
+                    if self.opcao == '1':
+                        self.opcao = '2'
+                    elif self.opcao == '2':
+                        self.opcao = '3'
+    
+    def mostrar_texto(self):
+        texto = self.fonte.render('ESCOLHA SEU PERSONAGEM', True, ('WHITE'))
+        self.window.blit(texto, (300, 100))
+
+
+
+
+    def triangulos_de_escolha(self):
+        if self.opcao == '1':
+            pg.draw.polygon(self.window, ('DARK RED'), (self.triangulo_1[0], self.triangulo_1[1], self.triangulo_1[2]))
+        elif self.opcao == '2':
+            pg.draw.polygon(self.window, ('DARK RED'), (self.triangulo_2[0], self.triangulo_2[1], self.triangulo_2[2]))
+        elif self.opcao == '3':
+            pg.draw.polygon(self.window, ('DARK RED'), (self.triangulo_3[0], self.triangulo_3[1], self.triangulo_3[2]))
