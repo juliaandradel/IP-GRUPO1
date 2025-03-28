@@ -1,0 +1,50 @@
+import pygame as pg
+class Tela_de_escolha:
+    def __init__(self, window):
+        self.window = window
+        self.fonte_maior = pg.font.SysFont('sans', 50)
+        self.fonte_menor = pg.font.SysFont('pixel',35,bold=False,italic=True)
+        self.opcao = '1'
+        self.distancia_opcoes = 300
+        self.triangulo_1 = [(300, 600), (380, 600), (340, 540)]
+        self.triangulo_2 = [(580, 600), (660, 600), (620, 540)]
+        self.triangulo_3 = [(860, 600), (940, 600), (900, 540)]
+        self.nome_messi = ['Lionel Messi',(255,620)]
+        self.nome_cr7 = ['Cristiano Ronaldo',(502,620)]
+        self.nome_neymar = ['Neymar Jr.',(830,620)]
+
+    def movimentacao_escolha(self, evento):
+        if evento.type == pg.KEYDOWN:
+            if evento.key == pg.K_a:
+                if self.opcao == '2':
+                    self.opcao = '1'
+                elif self.opcao == '3':
+                    self.opcao = '2'
+            if evento.key == pg.K_d:
+                if self.opcao == '1':
+                    self.opcao = '2'
+                elif self.opcao == '2':
+                    self.opcao = '3'
+
+    def mostrar_texto(self):
+        texto = self.fonte_maior.render('ESCOLHA SEU PERSONAGEM', True, ('WHITE'))
+        self.window.blit(texto, (300, 100))
+
+    def mostrar_imagem(self):
+        imagem_neymar = pg.draw.rect(self.window, (255, 255, 255), (800, 200, 200, 300))
+        imagem_messi = pg.draw.rect(self.window, (255, 255, 255), (240, 200, 200, 300))
+        imagem_cr7 = pg.draw.rect(self.window, (255, 255, 255), (520, 200, 200, 300))
+    def triangulos_de_escolha(self):
+        if self.opcao == '1':
+            texto_jogador = self.fonte_menor.render(self.nome_messi[0], True, ('White'))
+            self.window.blit(texto_jogador, (self.nome_messi[1]))
+            pg.draw.polygon(self.window, ('DARK RED'), (self.triangulo_1[0], self.triangulo_1[1], self.triangulo_1[2]))
+        elif self.opcao == '2':
+            texto_jogador = self.fonte_menor.render(self.nome_cr7[0], True, ('White'))
+            self.window.blit(texto_jogador, (self.nome_cr7[1]))
+            pg.draw.polygon(self.window, ('DARK RED'), (self.triangulo_2[0], self.triangulo_2[1], self.triangulo_2[2]))
+        elif self.opcao == '3':
+            imagem_neymar = pg.draw.rect(self.window,(255,255,255),(800,200,200,300))
+            texto_jogador = self.fonte_menor.render(self.nome_neymar[0], True, ('White'))
+            self.window.blit(texto_jogador, (self.nome_neymar[1]))
+            pg.draw.polygon(self.window, ('DARK RED'), (self.triangulo_3[0], self.triangulo_3[1], self.triangulo_3[2]))
