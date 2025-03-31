@@ -55,17 +55,25 @@ class Jogador:
 
 class Tiro_Jogador:
     def __init__(self, x, y, mouse_x, mouse_y):
-        self.image = pg.image.load("img.png")  # Carrega a imagem da bola
-        self.image = pg.transform.scale(self.image, (20, 20))  # Redimensiona para 20x20 pixels
-        self.rect = self.image.get_rect(center=(x, y))  # Define o retângulo da bola
+        self.image = pg.image.load("bola3.png").convert_alpha()
+        self.image = pg.transform.scale(self.image, (20, 20))
+        self.rect = self.image.get_rect(center=(x, y))
 
         self.speed = 6
-        self.angle = math.atan2(mouse_y - y, mouse_x - x)
-        self.x_vel = math.cos(self.angle) * self.speed
-        self.y_vel = math.sin(self.angle) * self.speed
+
+        # Criar um vetor para a posição inicial e um para o mouse
+        self.pos = pg.Vector2(x, y)
+        target = pg.Vector2(mouse_x, mouse_y)
+
+        # Calcular a direção normalizada
+        self.direction = (target - self.pos).normalize() * self.speed
 
     def update(self, display):
-        self.rect.x += self.x_vel
-        self.rect.y += self.y_vel
-        display.blit(self.image, self.rect.topleft)  # Desenha a bola na tela
+        # Atualizar a posição do tiro
+        self.pos += self.direction
+        self.rect.center = self.pos  # Atualizar o rect da bola
+
+        # Desenhar a bola na tela
+        display.blit(self.image, self.rect.topleft)
+
 
