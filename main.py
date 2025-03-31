@@ -13,14 +13,13 @@ largura = 1280
 altura = 720
 tela = pg.display.set_mode((largura, altura))
 menu = Tela_de_escolha(tela)
-player = Jogador(tela, 100, 100, 30, 30, 'BLUE', 2, pg.K_w, pg.K_s, pg.K_a, pg.K_d)
+player = Jogador(tela, 100, 100, 60, 60, 'BLUE', 3, pg.K_w, pg.K_s, pg.K_a, pg.K_d)
 balas_jogador = []
 inimigos = [Inimigo(tela, 1) for _ in range(5)]
 coletaveis_vida = []
 energeticos = []
 dado_coletaveis = randint(1, 100)
 fps = pg.time.Clock()
-
 
 while menu.escolheu == False:
     fps.tick(15)
@@ -37,7 +36,7 @@ while menu.escolheu == False:
 
 while True:
     fps.tick(60)
-    tela.fill((24,164,86))
+    tela.fill((24, 164, 86))
     mouse_x, mouse_y = pg.mouse.get_pos()
     player.interface()
     for event in pg.event.get():
@@ -46,7 +45,7 @@ while True:
             exit()
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
-                balas_jogador.append(Tiro_Jogador(player.x, player.y, mouse_x, mouse_y))
+                balas_jogador.append(Tiro_Jogador(player.x + player.largura // 2, player.y + player.altura, mouse_x, mouse_y))
 
     player.movimentacao()
     player.update()
@@ -55,7 +54,7 @@ while True:
         bala.update(tela)
 
         for inimigo in inimigos[:]:
-            if inimigo.vivo and pg.Rect(inimigo.posicao_x, inimigo.posicao_y, 32, 32).collidepoint(bala.x, bala.y):
+            if inimigo.vivo and pg.Rect(inimigo.posicao_x, inimigo.posicao_y, 32, 32).collidepoint(bala.rect.center):
                 dado_coletaveis = randint(1, 100)
                 if dado_coletaveis <= 10:
                     qual_coletavel = randint(1, 2)
@@ -77,7 +76,7 @@ while True:
             player.tomar_dano()
 
         inimigo.existir()
-    
+
     for coletavel_vida in coletaveis_vida[:]:
         coletavel_vida.aparecer = True
         coletavel_vida.atualizar()
