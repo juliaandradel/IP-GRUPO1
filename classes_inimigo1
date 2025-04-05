@@ -1,0 +1,37 @@
+import pygame as pg
+from random import randint
+class Inimigo:
+    def _init_(self,tela,velocidade):
+        self.vivo = True
+        self.posicao_x = randint(0,1280)
+        self.posicao_y = randint(0,720)
+        self.velocidade = velocidade
+        self.tela = tela
+        self.rect = pg.Rect(self.posicao_x,self.posicao_y,32,32)
+
+    def movimentacao(self,alvo_x,alvo_y):
+        if alvo_x > self.posicao_x:
+            self.posicao_x += self.velocidade
+        if alvo_x < self.posicao_x:
+            self.posicao_x += -self.velocidade
+        if alvo_y > self.posicao_y:
+            self.posicao_y += self.velocidade
+        if alvo_y < self.posicao_y:
+            self.posicao_y += -self.velocidade
+        keys = pg.key.get_pressed()
+        if keys[pg.K_w]:
+            self.posicao_y -= 2
+        if keys[pg.K_s]:
+            self.posicao_y += 2
+        if keys[pg.K_a]:
+            self.posicao_x -= 2
+        if keys[pg.K_d]:
+            self.posicao_x += 2
+
+    def morrer(self):
+        self.vivo = False
+
+    def existir(self):
+        pg.draw.rect(self.tela,('Purple'),(self.posicao_x,self.posicao_y,32,32))
+        #atualizar a posição do retângulo para calcular a colisão
+        self.rect = pg.Rect(self.posicao_x,self.posicao_y,32,32)
