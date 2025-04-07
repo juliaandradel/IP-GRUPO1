@@ -1,7 +1,7 @@
 import pygame as pg
 from random import randint
 class Inimigo:
-    def _init_(self,tela,velocidade):
+    def __init__(self,tela,velocidade):
         self.vivo = True
         self.posicao_x = randint(0,1280)
         self.posicao_y = randint(0,720)
@@ -20,13 +20,13 @@ class Inimigo:
             self.posicao_y += -self.velocidade
         keys = pg.key.get_pressed()
         if keys[pg.K_w]:
-            self.posicao_y -= 2
-        if keys[pg.K_s]:
             self.posicao_y += 2
+        if keys[pg.K_s]:
+            self.posicao_y -= 2
         if keys[pg.K_a]:
-            self.posicao_x -= 2
-        if keys[pg.K_d]:
             self.posicao_x += 2
+        if keys[pg.K_d]:
+            self.posicao_x -= 2
 
     def morrer(self):
         self.vivo = False
