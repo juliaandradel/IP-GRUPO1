@@ -149,6 +149,8 @@ while lobby.escolheu_fase == False:
             energetico.atualizar()
             if energetico.rect.colliderect(player) and energetico.aparecer:
                 campo.tomar_energetico()
+                for inimigo in inimigos[:]:
+                    inimigo.velocidade = 2 * 2 / campo.velocidade
 
                 energeticos.remove(energetico)
             for nrg in energeticos:
@@ -166,6 +168,8 @@ while lobby.escolheu_fase == False:
                 campo.x = 100
                 campo.y = 100
                 campo.velocidade = 2
+                coletaveis_vida.clear()
+                energeticos.clear()
                 lobby = Lobby_fases(tela)
                 trofeu.aparecer = False
                 lobby.escolheu_fase = False
