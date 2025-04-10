@@ -49,6 +49,9 @@ campo = Jogador(tela, 0, 0, 1000, 1000, 'Green', 2, pg.K_w, pg.K_s, pg.K_a, pg.K
 # criando o relogio que dita a velocidade do jogo
 fps = pg.time.Clock()
 
+ultima_direcao_x = 0
+ultima_direcao_y = 0
+
 # inicializando o lobby de escolha de personagem
 while menu.escolheu == False:
     # definindo a velocidade do jogo em 15 frames por segundo
@@ -78,6 +81,23 @@ while lobby.escolheu_fase == False:
         if event.type == pg.QUIT:
             pg.quit()
             exit()
+    # Detecta se o jogador está se movendo agora
+    movimento_x = 0
+    movimento_y = 0
+    keys = pg.key.get_pressed()
+    if keys[pg.K_w]:
+        movimento_y -= 1
+    if keys[pg.K_s]:
+        movimento_y += 1
+    if keys[pg.K_a]:
+        movimento_x -= 1
+    if keys[pg.K_d]:
+        movimento_x += 1
+
+    # Atualiza a última direção caso o jogador esteja em movimento
+    if movimento_x != 0 or movimento_y != 0:
+        ultima_direcao_x = movimento_x
+        ultima_direcao_y = movimento_y
 
     campo.movimentacao()
     campo.update()
@@ -164,8 +184,32 @@ while lobby.escolheu_fase == False:
             # Faz o goleiro atirar periodicamente a cada 1,5s
             tempo_atual = pg.time.get_ticks()
             if tempo_atual - goleiro.tempo_ultimo_tiro >= 1500:
-                bala = TiroGoleiro(goleiro.posicao_x + 32, goleiro.posicao_y + 32, player.x + 16, player.y + 16)
-                balas_goleiro.append(bala)
+                centro_x = 640
+                centro_y = 360
+
+                # Distância prevista agora depende da velocidade real
+                previsao = campo.velocidade * 30
+
+                if movimento_x != 0 or movimento_y != 0:
+                    alvo_x = centro_x + movimento_x * previsao
+                    alvo_y = centro_y + movimento_y * previsao
+                else:
+                    alvo_x = centro_x
+                    alvo_y = centro_y
+
+                spread = 40
+                for i in [-1, 1]:
+                    desvio_x = i * spread
+                    desvio_y = i * spread
+
+                    bala = TiroGoleiro(
+                        goleiro.posicao_x + 32,
+                        goleiro.posicao_y + 32,
+                        alvo_x + desvio_y,
+                        alvo_y - desvio_x
+                    )
+                    balas_goleiro.append(bala)
+
                 goleiro.tempo_ultimo_tiro = tempo_atual
 
         for coletavel_vida in coletaveis_vida[:]:
@@ -183,6 +227,7 @@ while lobby.escolheu_fase == False:
                 campo.tomar_energetico()
                 for inimigo in inimigos[:]:
                     inimigo.velocidade = 2 * 2 / campo.velocidade
+                goleiro.velocidade = max(1, 2 * 2 / campo.velocidade)
 
                 energeticos.remove(energetico)
             for nrg in energeticos:
