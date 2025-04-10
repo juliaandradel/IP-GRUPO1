@@ -45,19 +45,24 @@ class Goleiro:
         self.posicao_y = randint(0, 720)
         self.velocidade = velocidade_normal / 1.5
         self.tela = tela
-        self.rect = pg.Rect(self.posicao_x, self.posicao_y, 64, 64)
+        self.rect = pg.Rect(self.posicao_x, self.posicao_y, 128, 128)
         self.vida = 15
         self.tempo_ultimo_tiro = 0
+        self.direcao = 'baixo'  # Direção inicial
 
     def movimentacao(self, alvo_x, alvo_y):
-        if alvo_x > self.posicao_x:
+        if alvo_x > self.posicao_x: #esquerda
             self.posicao_x += self.velocidade
-        if alvo_x < self.posicao_x:
+            self.direcao = 'esquerda'
+        if alvo_x < self.posicao_x: #direita
             self.posicao_x -= self.velocidade
-        if alvo_y > self.posicao_y:
+            self.direcao = 'direita'
+        if alvo_y > self.posicao_y: #baixo
             self.posicao_y += self.velocidade
-        if alvo_y < self.posicao_y:
+            self.direcao = 'baixo'
+        if alvo_y < self.posicao_y: #cima
             self.posicao_y -= self.velocidade
+            self.direcao = 'cima'
 
         keys = pg.key.get_pressed()
         if keys[pg.K_w]:
@@ -79,9 +84,7 @@ class Goleiro:
 
     def existir(self):
         if self.vivo:
-            # Desenha o goleiro
-            pg.draw.rect(self.tela, ('Orange'), (self.posicao_x, self.posicao_y, 64, 64))
-            self.rect = pg.Rect(self.posicao_x, self.posicao_y, 64, 64)
+            self.rect = pg.Rect(self.posicao_x, self.posicao_y, 128, 128)
 
             # Desenha a barra de vida
             vida_total = 15
@@ -118,10 +121,45 @@ class TiroGoleiro:
 
     def get_rect(self):
         return pg.Rect(self.x - self.raio, self.y - self.raio, self.raio * 2, self.raio * 2)
+    
+class Sprite_goleiro:
+    def __init__(self, arquivo):
+        self.spritesheet = pg.image.load(arquivo).convert_alpha()
+        self.frames = self.pegar_frames(128, 128)  # gera todos os frames automaticamente
 
+        # organiza os frames por direção
+        self.frames_direita = self.frames[0:3]
+        self.frames_esquerda = self.frames[3:6]
+        self.frames_baixo = self.frames[6:9]
+        self.frames_cima = self.frames[9:12]
 
+        self.tempo_por_frame = 100  # ms
+        self.ultimo_update = pg.time.get_ticks()
+        self.frame_index = 0
+        self.direcao = 'baixo'
 
+        self.animacoes = {
+            'direita': self.frames_direita,
+            'esquerda': self.frames_esquerda,
+            'cima': self.frames_cima,
+            'baixo': self.frames_baixo
+        }
 
+    def pegar_frames(self, largura_frame, altura_frame):
+        largura_total, altura_total = self.spritesheet.get_size()
+        frames = []
+        for y in range(0, altura_total, altura_frame):
+            for x in range(0, largura_total, largura_frame):
+                frame = pg.Surface((largura_frame, altura_frame), pg.SRCALPHA)
+                frame.blit(self.spritesheet, (0, 0), (x, y, largura_frame, altura_frame))
+                frames.append(frame)
+        return frames
 
-
-
+    def atualizar_animacao(self, direcao):
+        self.direcao = direcao
+        agora = pg.time.get_ticks()
+        if agora - self.ultimo_update > self.tempo_por_frame:
+            self.ultimo_update = agora
+            self.frame_index = (self.frame_index + 1) % len(self.animacoes[self.direcao])
+    def pegar_imagem(self):
+        return self.animacoes[self.direcao][self.frame_index]
