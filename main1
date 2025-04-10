@@ -1,0 +1,258 @@
+# importando bibliotecas
+import pygame as pg
+from sys import exit
+import time
+
+# importando as classes que criamos
+from classes_jogador import Tiro_Jogador, Jogador
+from random import randint
+from classes_inimigo import Inimigo, Goleiro, TiroGoleiro
+from classes_jogo import Tela_de_escolha, Lobby_fases
+from classes_coletaveis import Vida_extra, Energetico, Trofeu
+
+# iniciar o pygame
+pg.init()
+
+# fazendo existir uma tela
+largura = 1280
+altura = 720
+tela = pg.display.set_mode((largura, altura))
+
+# colocando o menu de escolha no nosso jogo
+menu = Tela_de_escolha(tela)
+
+# criando nosso personagem
+player = pg.draw.rect(tela, 'Blue', (640 - 16, 360 - 16, 32, 32))
+
+# declarando anteriormente as balas
+balas_jogador = []
+balas_goleiro = []
+
+# declarando anteriormente os inimigos
+inimigos = [Inimigo(tela, 2) for _ in range(5)]
+goleiro = Goleiro(tela, 2)
+goleiro_ativado = False
+
+# declarando ou criando os coletaveis
+coletaveis_vida = []
+energeticos = []
+dado_coletaveis = randint(1, 100)
+
+# criando o lobby de escolher a fase
+lobby = Lobby_fases(tela)
+
+inicializar_player_e_inimigos = True
+
+# criando o campo, que é quem vai se mover
+campo = Jogador(tela, 0, 0, 1000, 1000, 'Green', 2, pg.K_w, pg.K_s, pg.K_a, pg.K_d)
+
+# criando o relogio que dita a velocidade do jogo
+fps = pg.time.Clock()
+
+ultima_direcao_x = 0
+ultima_direcao_y = 0
+
+# inicializando o lobby de escolha de personagem
+while menu.escolheu == False:
+    # definindo a velocidade do jogo em 15 frames por segundo
+    fps.tick(15)
+
+    # permitindo fechar o jogo
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            pg.quit()
+            exit()
+            # fazendo as teclas se moverem
+        menu.movimentacao_escolha(event)
+    # dando a cor preta a tela
+    tela.fill((0, 0, 0))
+
+    menu.mostrar_texto()
+    menu.triangulos_de_escolha()
+    menu.mostrar_imagem()
+
+    # manter a tela atuaizando
+    pg.display.update()
+
+while lobby.escolheu_fase == False:
+    fps.tick(60)
+    tela.fill('Dark green')
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            pg.quit()
+            exit()
+    # Detecta se o jogador está se movendo agora
+    movimento_x = 0
+    movimento_y = 0
+    keys = pg.key.get_pressed()
+    if keys[pg.K_w]:
+        movimento_y -= 1
+    if keys[pg.K_s]:
+        movimento_y += 1
+    if keys[pg.K_a]:
+        movimento_x -= 1
+    if keys[pg.K_d]:
+        movimento_x += 1
+
+    # Atualiza a última direção caso o jogador esteja em movimento
+    if movimento_x != 0 or movimento_y != 0:
+        ultima_direcao_x = movimento_x
+        ultima_direcao_y = movimento_y
+
+    campo.movimentacao()
+    campo.update()
+    lobby.movimentacao()
+    lobby.renderizar_fases()
+    if player.colliderect(lobby.area_fase1) or player.colliderect(
+            lobby.area_fase2) or player.colliderect(lobby.area_fase3):
+        lobby.escolheu_fase = True
+        inicializar_player_e_inimigos = True
+    player = pg.draw.rect(tela, 'Blue', (640 - 16, 360 - 16, 32, 32))
+    pg.display.update()
+    while lobby.escolheu_fase:
+        if inicializar_player_e_inimigos:
+            campo.x = 100
+            campo.y = 100
+            inimigos = [Inimigo(tela, 1) for _ in range(5)]
+            goleiro = Goleiro(tela, 1)  # reseta o goleiro
+            goleiro_ativado = False  # reseta a flag
+            inicializar_player_e_inimigos = False
+
+        fps.tick(60)
+        tela.fill('black')
+        mouse_x, mouse_y = pg.mouse.get_pos()
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                exit()
+            if event.type == pg.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    balas_jogador.append(Tiro_Jogador(player.x, player.y, mouse_x, mouse_y))
+
+        campo.movimentacao()
+        campo.update()
+        campo.interface()
+        player = pg.draw.rect(tela, 'Blue', (640 - 16, 360 - 16, 32, 32))
+
+
+        for bala in balas_jogador[:]:
+            bala.update(tela)
+
+            for inimigo in inimigos[:]:
+                if inimigo.vivo and pg.Rect(inimigo.posicao_x, inimigo.posicao_y, 32, 32).collidepoint(bala.x, bala.y):
+                    dado_coletaveis = randint(1, 100)
+                    if dado_coletaveis <= 100:
+                        qual_coletavel = randint(1, 2)
+                        if qual_coletavel == 1:
+                            coletaveis_vida.append(Vida_extra(tela, inimigo.posicao_x, inimigo.posicao_y))
+                        elif qual_coletavel == 2:
+                            energeticos.append(Energetico(tela, inimigo.posicao_x, inimigo.posicao_y))
+                    inimigo.morrer()
+                    inimigos.remove(inimigo)
+                    balas_jogador.remove(bala)
+                    break
+
+            if goleiro.vivo and pg.Rect(goleiro.posicao_x, goleiro.posicao_y, 64, 64).collidepoint(bala.x, bala.y):
+                goleiro.tomar_dano()
+                balas_jogador.remove(bala)
+                break
+        for bala_g in balas_goleiro[:]:
+            bala_g.update(tela)
+
+            if bala_g.get_rect().colliderect(player):
+                campo.tomar_dano()
+                balas_goleiro.remove(bala_g)
+
+        for inimigo in inimigos[:]:
+            inimigo.movimentacao(player.x, player.y)
+
+            if inimigo.rect.colliderect(player):
+                inimigo.morrer()
+                inimigos.remove(inimigo)
+                campo.tomar_dano()
+
+            inimigo.existir()
+        if goleiro.vivo:
+            goleiro.movimentacao(player.x, player.y)
+
+            if goleiro.rect.colliderect(player):
+                goleiro.morrer()
+                campo.tomar_dano()
+
+            if goleiro.vivo:  # só desenha se ainda estiver vivo
+                goleiro.existir()
+            # Faz o goleiro atirar periodicamente a cada 1,5s
+            tempo_atual = pg.time.get_ticks()
+            if tempo_atual - goleiro.tempo_ultimo_tiro >= 1500:
+                centro_x = 640
+                centro_y = 360
+
+                # Distância prevista agora depende da velocidade real
+                previsao = campo.velocidade * 30
+
+                if movimento_x != 0 or movimento_y != 0:
+                    alvo_x = centro_x + movimento_x * previsao
+                    alvo_y = centro_y + movimento_y * previsao
+                else:
+                    alvo_x = centro_x
+                    alvo_y = centro_y
+
+                spread = 40
+                for i in [-1, 1]:
+                    desvio_x = i * spread
+                    desvio_y = i * spread
+
+                    bala = TiroGoleiro(
+                        goleiro.posicao_x + 32,
+                        goleiro.posicao_y + 32,
+                        alvo_x + desvio_y,
+                        alvo_y - desvio_x
+                    )
+                    balas_goleiro.append(bala)
+
+                goleiro.tempo_ultimo_tiro = tempo_atual
+
+        for coletavel_vida in coletaveis_vida[:]:
+            coletavel_vida.aparecer = True
+            coletavel_vida.movimentacao()
+            coletavel_vida.atualizar()
+            if coletavel_vida.rect.colliderect(player) and coletavel_vida.aparecer:
+                campo.recuperar_vida()
+                coletaveis_vida.remove(coletavel_vida)
+        for energetico in energeticos[:]:
+            energetico.aparecer = True
+            energetico.movimentacao()
+            energetico.atualizar()
+            if energetico.rect.colliderect(player) and energetico.aparecer:
+                campo.tomar_energetico()
+                for inimigo in inimigos[:]:
+                    inimigo.velocidade = 2 * 2 / campo.velocidade
+                goleiro.velocidade = max(1, 2 * 2 / campo.velocidade)
+
+                energeticos.remove(energetico)
+            for nrg in energeticos:
+                nrg.velocidade = campo.velocidade
+            for vida in coletaveis_vida:
+                vida.velocidade = campo.velocidade
+        if len(inimigos) == 0 and not goleiro_ativado:
+            goleiro.vivo = True
+            goleiro_ativado = True
+
+        if len(inimigos) == 0 and not goleiro.vivo:
+            trofeu = Trofeu(tela, campo.x + 300, campo.y + 300)
+            trofeu.velocidade = campo.velocidade
+            trofeu.aparecer = True
+            trofeu.movimentacao()
+            trofeu.atualizar()
+            if trofeu.rect.colliderect(player) and trofeu.aparecer:
+                campo.coletar_trofeu()
+                campo.x = 100
+                campo.y = 100
+                campo.velocidade = 2
+                coletaveis_vida.clear()
+                energeticos.clear()
+                lobby = Lobby_fases(tela)
+                trofeu.aparecer = False
+                lobby.escolheu_fase = False
+
+        pg.display.update()

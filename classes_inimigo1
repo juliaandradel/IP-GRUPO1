@@ -1,0 +1,127 @@
+import pygame as pg
+from random import randint
+import math
+
+class Inimigo:
+    def __init__(self,tela,velocidade):
+        self.vivo = True
+        self.posicao_x = randint(0,1280)
+        self.posicao_y = randint(0,720)
+        self.velocidade = velocidade
+        self.tela = tela
+        self.rect = pg.Rect(self.posicao_x,self.posicao_y,32,32)
+
+    def movimentacao(self,alvo_x,alvo_y):
+        if alvo_x > self.posicao_x:
+            self.posicao_x += self.velocidade
+        if alvo_x < self.posicao_x:
+            self.posicao_x += -self.velocidade
+        if alvo_y > self.posicao_y:
+            self.posicao_y += self.velocidade
+        if alvo_y < self.posicao_y:
+            self.posicao_y += -self.velocidade
+        keys = pg.key.get_pressed()
+        if keys[pg.K_w]:
+            self.posicao_y += 2
+        if keys[pg.K_s]:
+            self.posicao_y -= 2
+        if keys[pg.K_a]:
+            self.posicao_x += 2
+        if keys[pg.K_d]:
+            self.posicao_x -= 2
+
+    def morrer(self):
+        self.vivo = False
+
+    def existir(self):
+        pg.draw.rect(self.tela,('Purple'),(self.posicao_x,self.posicao_y,32,32))
+        #atualizar a posição do retângulo para calcular a colisão
+        self.rect = pg.Rect(self.posicao_x,self.posicao_y,32,32)
+
+class Goleiro:
+    def __init__(self, tela, velocidade_normal):
+        self.vivo = False
+        self.posicao_x = randint(0, 1280)
+        self.posicao_y = randint(0, 720)
+        self.velocidade = velocidade_normal / 1.5
+        self.tela = tela
+        self.rect = pg.Rect(self.posicao_x, self.posicao_y, 64, 64)
+        self.vida = 15
+        self.tempo_ultimo_tiro = 0
+
+    def movimentacao(self, alvo_x, alvo_y):
+        if alvo_x > self.posicao_x:
+            self.posicao_x += self.velocidade
+        if alvo_x < self.posicao_x:
+            self.posicao_x -= self.velocidade
+        if alvo_y > self.posicao_y:
+            self.posicao_y += self.velocidade
+        if alvo_y < self.posicao_y:
+            self.posicao_y -= self.velocidade
+
+        keys = pg.key.get_pressed()
+        if keys[pg.K_w]:
+            self.posicao_y += 2
+        if keys[pg.K_s]:
+            self.posicao_y -= 2
+        if keys[pg.K_a]:
+            self.posicao_x += 2
+        if keys[pg.K_d]:
+            self.posicao_x -= 2
+
+    def tomar_dano(self):
+        self.vida -= 1
+        if self.vida <= 0:
+            self.morrer()
+
+    def morrer(self):
+        self.vivo = False
+
+    def existir(self):
+        if self.vivo:
+            # Desenha o goleiro
+            pg.draw.rect(self.tela, ('Orange'), (self.posicao_x, self.posicao_y, 64, 64))
+            self.rect = pg.Rect(self.posicao_x, self.posicao_y, 64, 64)
+
+            # Desenha a barra de vida
+            vida_total = 15
+            largura_barra = 64
+            altura_barra = 6
+            margem = 4
+
+            proporcao = self.vida / vida_total
+            barra_vida = largura_barra * proporcao
+
+            # Fundo (cinza)
+            pg.draw.rect(self.tela, (80, 80, 80),
+                         (self.posicao_x, self.posicao_y - margem, largura_barra, altura_barra))
+            # Vida restante (vermelha)
+            pg.draw.rect(self.tela, (255, 0, 0), (self.posicao_x, self.posicao_y - margem, barra_vida, altura_barra))
+
+
+class TiroGoleiro:
+    def __init__(self, x, y, alvo_x, alvo_y):
+        self.x = x
+        self.y = y
+        self.velocidade = 10  # pode ajustar
+        dx = alvo_x - x
+        dy = alvo_y - y
+        distancia = max((dx**2 + dy**2) ** 0.5, 0.01)
+        self.x_vel = (dx / distancia) * self.velocidade
+        self.y_vel = (dy / distancia) * self.velocidade
+        self.raio = 9  # maior para mais desafio
+
+    def update(self, tela):
+        self.x += self.x_vel
+        self.y += self.y_vel
+        pg.draw.circle(tela, (255, 50, 50), (int(self.x), int(self.y)), self.raio)
+
+    def get_rect(self):
+        return pg.Rect(self.x - self.raio, self.y - self.raio, self.raio * 2, self.raio * 2)
+
+
+
+
+
+
+

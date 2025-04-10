@@ -4,6 +4,7 @@ from sys import exit
 import math
 
 
+
 class Jogador:
     def __init__(self, window, x, y, largura, altura, cor, velocidade, cima, baixo, esquerda, direita):
         self.window = window
@@ -20,6 +21,9 @@ class Jogador:
         self.vida = 3
         self.rect = pg.Rect(self.x, self.y, self.largura, self.altura)
         self.trofeus = 0
+        self.velocidade_original = velocidade
+        self.energetico_ativo = False
+        self.tempo_inicio = 0
 
     # agora, vamos criar os métodos para o player(movimentação, draw, etc)
     def movimentacao(self):
@@ -43,6 +47,9 @@ class Jogador:
     def tomar_energetico(self):
         if self.velocidade < 10:
             self.velocidade += 2
+            self.energetico_ativo = True
+            self.tempo_inicio = pg.time.get_ticks()
+
 
     def coletar_trofeu(self):
         self.trofeus += 1
@@ -50,6 +57,10 @@ class Jogador:
     def update(self):
         pg.draw.rect(self.window, self.cor, (self.x, self.y, self.largura, self.altura))
         self.rect = pg.Rect(self.x, self.y, self.largura, self.altura)
+        if pg.time.get_ticks() - self.tempo_inicio >= 10000:  # 10000 ms = 10 segundos
+            self.velocidade = self.velocidade_original  # Restaura a velocidade original
+            self.energetico_ativo = False  # Desativa o efeito do energético
+
 
     def interface(self):
         fonte = pg.font.SysFont('pixel', 35, bold=False, italic=True)
