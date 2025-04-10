@@ -14,6 +14,7 @@ class Tela_de_escolha:
         self.nome_messi = ['Lionel Messi', (255, 620)]
         self.nome_cr7 = ['Cristiano Ronaldo', (502, 620)]
         self.nome_neymar = ['Neymar Jr.', (830, 620)]
+        self.player_escolhido = ''
         # checar se o boneco ja foi escolhido ou não
         self.escolheu = False
 
@@ -32,9 +33,9 @@ class Tela_de_escolha:
             if evento.key == pg.K_KP_ENTER or evento.key == pg.K_RETURN:
                 if self.opcao == '1':
                     self.player_escolhido = 'Messi'
-                if self.opcao == '1':
+                if self.opcao == '2':
                     self.player_escolhido = 'cr7'
-                if self.opcao == '1':
+                if self.opcao == '3':
                     self.player_escolhido = 'neymar'
                 self.escolheu = True
 
@@ -118,4 +119,4 @@ class Lobby_fases:
         self.area_fase3 = pg.draw.rect(self.window, ('DARK RED'), (self.retangulo_3[0],self.retangulo_3[1],70,70))
         self.window.blit(self.texto_fase1, (self.nome_fase1[1],self.nome_fase1[2]))
         self.window.blit(self.texto_fase2, (self.nome_fase2[1],self.nome_fase2[2]))
-        self.window.blit(self.texto_fase3, (self.nome_fase3[1],self.nome_fase3[2]))
+        self.window.blit(self.texto_fase3, (self.nome_fase3[1],self.nome_fase3[2])) 
