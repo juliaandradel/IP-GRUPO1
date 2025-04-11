@@ -10,7 +10,6 @@ No início do jogo, você pode escolher entre três dos maiores craques do futeb
 - 🇦🇷 **Lionel Messi**
 - 🇧🇷 **Neymar Jr**
 
-Cada jogador possui habilidades únicas que você poderá explorar ao longo do jogo!
 
 ## 🎮 Objetivo do Jogo
 
@@ -36,7 +35,7 @@ Vença Neuer e **conquiste o troféu da Copa do Mundo!** 🏆
 ### 🎁 Itens Coletáveis
 
 - ⚡ **Energético**: aumenta a velocidade do jogador.
-- 👟 **Chuteira**: aumenta o dano causado nos inimigos.
+- ❤ **Vida**: aumenta a vida do jogador em 1, caso ele tenha menos de 3 vidas.
 - 🏆 **Troféu**: pode ser coletado somente após vencer o boss final (Neuer).
 
 ## 🛠️ Status do Projeto
