@@ -11,6 +11,7 @@ class Vida_extra:
         self.posicao_y = posicao_y
         self.rect = None
         self.velocidade = 2
+        self.imagem = pg.image.load('vida_extra.png')
 
     def movimentacao(self):
         keys = pg.key.get_pressed()
@@ -25,9 +26,9 @@ class Vida_extra:
 
     def atualizar(self):
         if self.aparecer:
-            pg.draw.rect(self.tela, ('RED'), (self.posicao_x, self.posicao_y, 16, 16))
+            self.tela.blit(self.imagem, (self.posicao_x, self.posicao_y))
             # Atualizar a posição do retângulo para calcular a colisão
-            self.rect = pg.Rect(self.posicao_x, self.posicao_y, 16, 16)
+            self.rect = pg.Rect(self.posicao_x, self.posicao_y, 30, 30)
 
 
 class Energetico:
@@ -38,6 +39,7 @@ class Energetico:
         self.posicao_y = posicao_y
         self.rect = None
         self.velocidade = 2
+        self.imagem = pg.image.load('energetico.png')
 
     def movimentacao(self):
         keys = pg.key.get_pressed()
@@ -52,9 +54,9 @@ class Energetico:
 
     def atualizar(self):
         if self.aparecer:
-            pg.draw.rect(self.tela, ('YELLOW'), (self.posicao_x, self.posicao_y, 16, 16))
+            self.tela.blit(self.imagem, (self.posicao_x, self.posicao_y))
             # Atualizar a posição do retângulo para calcular a colisão
-            self.rect = pg.Rect(self.posicao_x, self.posicao_y, 16, 16)
+            self.rect = pg.Rect(self.posicao_x, self.posicao_y, 30, 30)
 
 
 class Trofeu:
@@ -65,6 +67,7 @@ class Trofeu:
         self.posicao_y = posicao_y
         self.rect = None
         self.velocidade = 2
+        self.imagem = pg.image.load('troféu-removebg-preview.png').convert_alpha()
 
     def movimentacao(self):
         keys = pg.key.get_pressed()
@@ -79,9 +82,9 @@ class Trofeu:
 
     def atualizar(self):
         if self.aparecer:
-            pg.draw.rect(self.tela, ('SILVER'), (self.posicao_x, self.posicao_y, 64, 64))
+            self.tela.blit(self.imagem, (self.posicao_x, self.posicao_y))
             # Atualizar a posição do retângulo para calcular a colisão
-            self.rect = pg.Rect(self.posicao_x, self.posicao_y, 64, 64)
+            self.rect = pg.Rect(self.posicao_x, self.posicao_y, 90, 90)
 
     def texto_vitoria(self):
         fonte = pg.font.SysFont('pixel', 35, bold=False, italic=True)
