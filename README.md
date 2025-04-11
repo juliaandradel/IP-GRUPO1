@@ -33,7 +33,11 @@ O jogo foi desenvolvido com Pygame e estruturado em diferentes arquivos para mel
 
 ## 3. Capturas de Tela
 
-> <img alt="Coding" width="400" src="https://github.com/sofiaremides/sofiaremides/blob/main/_c1e773b7-acab-4050-b25d-de266857700b.jpeg">
+> <img align="left" src="https://raw.githubusercontent.com/sofiaremides/IP-GRUPO1/main/trophy.png" width="700">
+> <img src="https://raw.githubusercontent.com/sofiaremides/IP-GRUPO1/main/lobby%20phases.png" alt="Lobby Phases" width="700">
+> <img src="https://raw.githubusercontent.com/sofiaremides/IP-GRUPO1/main/enemy.png" alt="Enemy" width="810">
+
+
 
 ---
 
@@ -74,7 +78,8 @@ O Pygame é leve, fácil de aprender e ideal para protótipos rápidos de jogos 
 Mudança de lógica de movimentação do jogador muito tarde (de cenário fixo para o personagem fixo no centro), o que exigiu reestruturar grande parte do código em pouco tempo.
 
 ### Maior desafio:
-Implementar essa nova movimentação e, ao mesmo tempo, manter a lógica de colisão, spawn de inimigos e coleta de itens funcionando.
+- Implementar essa nova movimentação e, ao mesmo tempo, manter a lógica de colisão, spawn de inimigos e coleta de itens funcionando.
+- Animação dos inimigos.
 
 ### Lições aprendidas:
 - Refatorar o código cedo evita retrabalho.
@@ -92,7 +97,7 @@ Implementar essa nova movimentação e, ao mesmo tempo, manter a lógica de coli
 ### Instruções:
 
 ```bash
-git clone https://github.com/seu-usuario/jogo-copa-do-mundo.git
+git clone [https://github.com/seu-usuario/jogo-copa-do-mundo.git](https://github.com/juliaandradel/IP-GRUPO1.git)
 cd jogo-copa-do-mundo
 python main.py
 ```
