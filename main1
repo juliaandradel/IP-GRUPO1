@@ -7,7 +7,7 @@ import time
 from classes_jogador import Tiro_Jogador, Jogador, Spritesheet, Fundo_fase
 from random import randint
 from classes_inimigo import Inimigo, Goleiro, TiroGoleiro, Sprite_goleiro
-from classes_jogo import Tela_de_escolha, Lobby_fases
+from classes_jogo import Tela_de_escolha, Lobby_fases, Tela_de_inicio
 from classes_coletaveis import Vida_extra, Energetico, Trofeu
 
 # iniciar o pygame
@@ -18,14 +18,18 @@ largura = 1280
 altura = 720
 tela = pg.display.set_mode((largura, altura))
 
+jogo_acabou = False
+
 background_fases = Fundo_fase(tela, 2, pg.K_w, pg.K_s, pg.K_a, pg.K_d)
 
+fundo_lobby = pg.image.load('fundo_lobby.png').convert()
+fundo_x = -180
+fundo_y = 0
 # colocando o menu de escolha no nosso jogo
 menu = Tela_de_escolha(tela)
 
 # criando nosso personagem
-player = pg.Rect((640 - 16, 360 - 16, 32, 32)) # POSIÇÃO DO PERSONAGEM
-
+player = pg.Rect((640 - 16, 360 - 16, 32, 32))  # POSIÇÃO DO PERSONAGEM
 
 # declarando anteriormente as balas
 balas_jogador = []
@@ -40,6 +44,7 @@ goleiro_ativado = False
 coletaveis_vida = []
 energeticos = []
 dado_coletaveis = randint(1, 100)
+trofeu = None
 
 # criando o lobby de escolher a fase
 lobby = Lobby_fases(tela)
@@ -55,6 +60,18 @@ fps = pg.time.Clock()
 ultima_direcao_x = 0
 ultima_direcao_y = 0
 
+tela_de_inicio = Tela_de_inicio(tela)
+
+while tela_de_inicio.iniciar == False:
+    for evento in pg.event.get():
+        if evento.type == pg.QUIT:
+            pg.quit()
+            exit()
+
+        tela_de_inicio.sumir(evento)
+
+    tela_de_inicio.aparecer()
+    pg.display.update()
 # inicializando o lobby de escolha de personagem
 while menu.escolheu == False:
     # definindo a velocidade do jogo em 15 frames por segundo
@@ -84,8 +101,48 @@ while menu.escolheu == False:
         sprite = Spritesheet('Neymar sprite sheet.png')
     # ESCOLHEU O PERSONAGEM
 while lobby.escolheu_fase == False:
+    if campo.trofeus == 3:  # Verifica se o jogador coletou 3 troféus
+        jogo_acabou = True
+
+    while jogo_acabou:
+        # Carrega e exibe a imagem de fim de jogo
+        tela_fim = pg.image.load('tela_fim_de_jogo.jpg')
+        tela.blit(tela_fim, (0, 0))
+        pg.display.update()
+
+        # Aguarda eventos do jogador
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                exit()  # Jogador fecha o jogo
+                jogo_acabou = False
+                rodando = False  # Encerra o loop principal
+            elif event.type == pg.KEYDOWN:  # Jogador pressiona uma tecla
+                if event.key == pg.K_RETURN:  # Reinicia o jogo ao pressionar Enter
+                    # Reinicia o estado do jogo
+                    campo.trofeus = 0
+                    campo.x = 100
+                    campo.y = 100
+                    campo.velocidade = 2
+                    campo.vida = 3
+                    coletaveis_vida.clear()
+                    energeticos.clear()
+                    balas_jogador.clear()
+                    balas_goleiro.clear()
+                    lobby = Lobby_fases(tela)
+                    jogo_acabou = False  # Sai do loop de fim de jogo
     fps.tick(60)
     tela.fill('Dark green')
+    keys = pg.key.get_pressed()
+    if keys[pg.K_w]:
+        fundo_y += 2
+    if keys[pg.K_s]:
+        fundo_y -= 2
+    if keys[pg.K_a]:
+        fundo_x += 2
+    if keys[pg.K_d]:
+        fundo_x -= 2
+    tela.blit(fundo_lobby, (fundo_x, fundo_y))
     for event in pg.event.get():
         if event.type == pg.QUIT:
             pg.quit()
@@ -94,29 +151,31 @@ while lobby.escolheu_fase == False:
     movimento_x = 0
     movimento_y = 0
     keys = pg.key.get_pressed()
-    if keys[pg.K_w]: #cima
+    if keys[pg.K_w]:  # cima
         movimento_y -= 1
-    if keys[pg.K_s]: #baixo
+    if keys[pg.K_s]:  # baixo
         movimento_y += 1
-    if keys[pg.K_a]: #esquerda
+    if keys[pg.K_a]:  # esquerda
         movimento_x -= 1
-    if keys[pg.K_d]: #direita
+    if keys[pg.K_d]:  # direita
         movimento_x += 1
 
     # Atualiza a última direção caso o jogador esteja em movimento
     if movimento_x != 0 or movimento_y != 0:
         ultima_direcao_x = movimento_x
         ultima_direcao_y = movimento_y
-
     campo.movimentacao()
     campo.update()
     campo.interface()
     lobby.movimentacao()
     lobby.renderizar_fases()
     if player.colliderect(lobby.area_fase1) or player.colliderect(
-            lobby.area_fase2) or player.colliderect(lobby.area_fase3):
+        lobby.area_fase2) or player.colliderect(lobby.area_fase3):
+        campo.x = 1280 / 2 - 32
+        campo.y = 720 / 2 - 32
+
         if player.colliderect(lobby.area_fase1):
-            lobby.fase_escolhida = 'Bélgica'
+            lobby.fase_escolhida = 'Alemanha'
         elif player.colliderect(lobby.area_fase2):
             lobby.fase_escolhida = 'Espanha'
         elif player.colliderect(lobby.area_fase3):
@@ -134,6 +193,8 @@ while lobby.escolheu_fase == False:
             goleiro = Goleiro(tela, 1)  # reseta o goleiro
             goleiro_ativado = False  # reseta a flag
             inicializar_player_e_inimigos = False
+        background_fases.velocidade = campo.velocidade
+
 
         fps.tick(60)
         tela.fill('black')
@@ -144,11 +205,13 @@ while lobby.escolheu_fase == False:
                 exit()
             if event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    balas_jogador.append(Tiro_Jogador(player.x, player.y, mouse_x, mouse_y))
+                    balas_jogador.append(Tiro_Jogador(player.x+20, player.y+56, mouse_x, mouse_y))
 
         campo.movimentacao()
         background_fases.movimentacao()
         background_fases.mostrar_area_visivel(background_fases.x, background_fases.y)
+        background_fases.x = max(1280 - 3200, min(background_fases.x, 640))
+        background_fases.y = max(720 - 1800, min(background_fases.y, 360))
         campo.x = max(0, min(campo.x, 2560 - 1280))
         campo.y = max(0, min(campo.y, 1440 - 720))
 
@@ -220,7 +283,7 @@ while lobby.escolheu_fase == False:
                 centro_y = 360
 
                 # Distância prevista agora depende da velocidade real
-                previsao = campo.velocidade * 30
+                previsao = campo.velocidade * 40
 
                 if movimento_x != 0 or movimento_y != 0:
                     alvo_x = centro_x + movimento_x * previsao
@@ -247,11 +310,13 @@ while lobby.escolheu_fase == False:
             coletavel_vida.aparecer = True
             coletavel_vida.movimentacao()
             coletavel_vida.atualizar()
+            coletavel_vida.velocidade = campo.velocidade
             if coletavel_vida.rect.colliderect(player) and coletavel_vida.aparecer:
                 campo.recuperar_vida()
                 coletaveis_vida.remove(coletavel_vida)
         for energetico in energeticos[:]:
             energetico.aparecer = True
+            energetico.velocidade = campo.velocidade
             energetico.movimentacao()
             energetico.atualizar()
             if energetico.rect.colliderect(player) and energetico.aparecer:
@@ -265,16 +330,18 @@ while lobby.escolheu_fase == False:
                 nrg.velocidade = campo.velocidade
             for vida in coletaveis_vida:
                 vida.velocidade = campo.velocidade
-        
+
         if campo.velocidade > 2:
             goleiro.velocidade = 1.5 * 2 / campo.velocidade
 
         if len(inimigos) == 0 and not goleiro_ativado:
             goleiro.vivo = True
             goleiro_ativado = True
-
+    
+    
         if len(inimigos) == 0 and not goleiro.vivo:
-            trofeu = Trofeu(tela, campo.x + 300, campo.y + 300)
+            if trofeu is None:
+                trofeu = Trofeu(tela, campo.x + 300, campo.y + 300)
             trofeu.velocidade = campo.velocidade
             trofeu.aparecer = True
             trofeu.movimentacao()
@@ -283,21 +350,31 @@ while lobby.escolheu_fase == False:
                 campo.coletar_trofeu()
                 campo.x = 100
                 campo.y = 100
+                fundo_x = 0
+                fundo_y = 0
                 campo.velocidade = 2
                 campo.vida = 3
                 coletaveis_vida.clear()
                 energeticos.clear()
+                balas_jogador.clear()
+                balas_goleiro.clear()
                 lobby = Lobby_fases(tela)
                 trofeu.aparecer = False
                 lobby.escolheu_fase = False
         if campo.vida <= 0:
             campo.x = 100
             campo.y = 100
+            fundo_x = 0
+            fundo_y = 0
             campo.velocidade = 2
             campo.vida = 3
             coletaveis_vida.clear()
             energeticos.clear()
+            balas_jogador.clear()
+            balas_goleiro.clear()
             lobby = Lobby_fases(tela)
             lobby.escolheu_fase = False
+        
+
 
         pg.display.update()
