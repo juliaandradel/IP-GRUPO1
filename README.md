@@ -1,55 +1,105 @@
-# 🌍⚽ Copa dos Craques
+# 🌍⚽ Copa do Mundo
 
-Bem-vindo à **Copa dos Craques**, um jogo de aventura e ação no qual você assume o papel de uma lenda do futebol e enfrenta grandes desafios para conquistar o troféu da Copa do Mundo! 🏆
+Bem-vindo à *Copa do Mundo*, um jogo de aventura e ação no qual você assume o papel de uma lenda do futebol e enfrenta grandes desafios para conquistar o troféu da Copa do Mundo!
 
-## 👤 Escolha seu Jogador
+---
 
-No início do jogo, você pode escolher entre três dos maiores craques do futebol mundial:
+## 1. Título e membros da equipe
+*Copa dos Craques*  
+*Membros:*  
+- 🇵🇹 Cristiano Ronaldo  
+- 🇦🇷 Lionel Messi
+- 🇧🇷 Neymar Jr.  
 
-- 🇵🇹 **Cristiano Ronaldo**
-- 🇦🇷 **Lionel Messi**
-- 🇧🇷 **Neymar Jr**
+---
+
+## 2. Arquitetura do Projeto
+
+O jogo foi desenvolvido com Pygame e estruturado em diferentes arquivos para melhor organização:
+
+- *main.py*: controla o loop principal do jogo, eventos e lógica geral.
+- *classes_jogador.py*: contém as classes relacionadas ao jogador e aos tiros.
+- *classes_inimigo.py*: define o comportamento dos inimigos.
+- *classes_jogo.py*: lida com telas de escolha e lobby de fases.
+- *classes_coletaveis.py*: trata dos itens que podem ser coletados.
+
+### Organização:
+- O jogador é instanciado no início e se movimenta com as teclas WASD.
+- O jogo é dividido em menus, lobby e fases com inimigos.
+- A lógica de colisão define quando o jogador coleta itens, derrota inimigos ou interage com o troféu.
+- Cada classe possui responsabilidades bem definidas, facilitando a manutenção e expansão.
+
+---
+
+## 3. Capturas de Tela
+
+> <img align="left" src="https://raw.githubusercontent.com/sofiaremides/IP-GRUPO1/main/trophy.png" width="700">
+> <img src="https://raw.githubusercontent.com/sofiaremides/IP-GRUPO1/main/lobby%20phases.png" alt="Lobby Phases" width="700">
+> <img src="https://raw.githubusercontent.com/sofiaremides/IP-GRUPO1/main/enemy.png" alt="Enemy" width="810">
 
 
-## 🎮 Objetivo do Jogo
 
-Seu objetivo é derrotar os goleiros lendários em estádios espalhados pelo mapa e, ao final, conquistar o **troféu da Copa do Mundo**.
+---
 
-### 🗺️ Como Funciona o Jogo
+## 4. Ferramentas, bibliotecas e frameworks utilizados
 
-- Explore o mapa livremente.
-- Entre nos estádios para enfrentar os **chefões (bosses)**.
-- Colete itens especiais que aumentam suas habilidades.
+- *Python 3*
+- *Pygame*: biblioteca principal usada para renderização, eventos e lógica do jogo.
 
-### ⚔️ Bosses (Goleiros Inimigos)
+### Justificativa:
+O Pygame é leve, fácil de aprender e ideal para protótipos rápidos de jogos 2D.
 
-Você enfrentará uma sequência de grandes goleiros:
+---
 
-1. 🧤 **Courtois** – Primeiro boss.
-2. 🧤 **Casillas** – Disponível após derrotar Courtois.
-3. 🧤 **Buffon** – Disponível após derrotar Courtois.
-4. 🧤 **Neuer** – Boss final, desbloqueado ao derrotar os três anteriores.
+## 5. Divisão de trabalho
 
-Vença Neuer e **conquiste o troféu da Copa do Mundo!** 🏆
+- Fábio: Fez a mecânica de tiro do jogador, o goleiro e a mecânica de tiro do goleiro, e ajudou nas imagens do jogo.
+- Dantte: Fez os coletáveis, ajustou a movimentação e os tiros, colocou e animou os sprites, fez as fases(tela de escolha, lobby e fases).
+- Guilherme: Ajustou a movimentação, fez os inimigos, a tela inicial e ajudou no geral com o desenvolvimento do personagem principal.
+- Júlia: Fez parte dos sprites, ajudou nos slides e deu suporte no ajuste da movimentação e das fases.
+- Sofia: Fez parte dos sprites, os slides, o README do projeto e ajudou no desenvolivimento dos inimigos.
+- Pedro: Fez parte dos sprites, ajudou nos slides e atuou dando suporte nos códigos.
 
-### 🎁 Itens Coletáveis
+---
 
-- ⚡ **Energético**: aumenta a velocidade do jogador.
-- ❤ **Vida**: aumenta a vida do jogador em 1, caso ele tenha menos de 3 vidas.
-- 🏆 **Troféu**: pode ser coletado somente após vencer o boss final (Neuer).
+## 6. Conceitos da disciplina utilizados
 
-## 🛠️ Status do Projeto
+- *Programação Orientada a Objetos*: todo o jogo é baseado em classes com encapsulamento e herança.
+- *Tratamento de eventos*: uso intensivo de eventos do Pygame.
+- *Listas e estruturas de dados*: armazenam balas, inimigos e itens coletáveis.
+- *Controle de fluxo*: loops aninhados para menus, fases e transições.
+- *Modularização*: separação do código em múltiplos arquivos.
 
-🚧 Em desenvolvimento  
-Futuramente serão adicionadas mais funcionalidades, personagens e desafios!
+---
 
-## 📌 Como Jogar
+## 7. Desafios, erros e lições aprendidas
 
-*(Instruções de como rodar o jogo localmente ou em navegador, caso já tenha)*
+### Erro maior:
+Mudança de lógica de movimentação do jogador muito tarde (de cenário fixo para o personagem fixo no centro), o que exigiu reestruturar grande parte do código em pouco tempo.
 
-```bash
+### Maior desafio:
+- Implementar essa nova movimentação e, ao mesmo tempo, manter a lógica de colisão, spawn de inimigos e coleta de itens funcionando.
+- Animação dos inimigos.
 
-git clone https://github.com/seu-usuario/jogo-copa-craques.git
-cd jogo-copa-craques
-npm install
-npm start
+### Lições aprendidas:
+- Refatorar o código cedo evita retrabalho.
+- Organização no GitHub ajuda no progresso coletivo.
+- Dividir tarefas e manter comunicação clara no grupo é essencial.
+
+---
+
+## 8. Como jogar
+
+### Requisitos:
+- Python 3.x instalado
+- Pygame instalado (pip install pygame)
+
+### Instruções:
+
+bash
+git clone (https://github.com/juliaandradel/IP-GRUPO1.git)
+cd jogo-copa-do-mundo
+python main.py
+
+
+Use as teclas W, A, S, D para movimentar-se e o mouse para atirar.
