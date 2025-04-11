@@ -33,7 +33,7 @@ O jogo foi desenvolvido com Pygame e estruturado em diferentes arquivos para mel
 
 ## 3. Capturas de Tela
 
-> (Adicionar aqui capturas de tela do sistema em funcionamento, mostrando menus, gameplay e a vitória após pegar o troféu.)
+> <img alt="Coding" width="400" src="https://github.com/sofiaremides/sofiaremides/blob/main/_c1e773b7-acab-4050-b25d-de266857700b.jpeg">
 
 ---
 
