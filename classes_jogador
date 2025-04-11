@@ -1,0 +1,172 @@
+import pygame as pg
+from pygame.locals import *
+from sys import exit
+import math
+
+
+
+class Jogador:
+    def __init__(self, window, x, y, largura, altura, cor, velocidade, cima, baixo, esquerda, direita):
+        self.window = window
+        self.x = x
+        self.y = y
+        self.largura = largura
+        self.altura = altura
+        self.cor = cor
+        self.velocidade = velocidade
+        self.cima = cima
+        self.baixo = baixo
+        self.esquerda = esquerda
+        self.direita = direita
+        self.vida = 3
+        self.rect = pg.Rect(self.x, self.y, self.largura, self.altura)
+        self.trofeus = 0
+        self.velocidade_original = velocidade
+        self.energetico_ativo = False
+        self.tempo_inicio = 0
+        self.direcao = 'baixo'  # Direção inicial
+        self.movendo = False
+
+    # agora, vamos criar os métodos para o player(movimentação, draw, etc)
+    def movimentacao(self):
+        keys = pg.key.get_pressed()
+        self.movendo = False
+        if keys[self.cima]:
+            self.y += self.velocidade
+            self.direcao = 'cima'
+            self.movendo = True
+        if keys[self.baixo]:
+            self.y -= self.velocidade
+            self.direcao = 'baixo'
+            self.movendo = True
+        if keys[self.esquerda]:
+            self.x += self.velocidade
+            self.direcao = 'esquerda'
+            self.movendo = True
+        if keys[self.direita]:
+            self.x -= self.velocidade
+            self.direcao = 'direita'
+            self.movendo = True
+
+
+
+    def tomar_dano(self):
+        self.vida -= 1
+
+    def recuperar_vida(self):
+        if self.vida < 3:
+            self.vida += 1
+
+    def tomar_energetico(self):
+        if self.velocidade < 4: # limite de velocidade
+            self.velocidade += 2
+            self.energetico_ativo = True
+            self.tempo_inicio = pg.time.get_ticks()
+
+
+    def coletar_trofeu(self):
+        self.trofeus += 1
+
+    def update(self):
+        self.rect = pg.Rect(self.x, self.y, self.largura, self.altura)
+        if pg.time.get_ticks() - self.tempo_inicio >= 10000:  # 10000 ms = 10 segundos
+            self.velocidade = self.velocidade_original  # Restaura a velocidade original
+            self.energetico_ativo = False  # Desativa o efeito do energético
+
+
+    def interface(self):
+        fonte = pg.font.SysFont('pixel', 35, bold=False, italic=True)
+        mostrar_vida = fonte.render(f'Vida: {self.vida}', True, ('WHITE'))
+        mostrar_trofeu = fonte.render(f'Troféus: {self.trofeus}', True, ('WHITE'))
+        self.window.blit(mostrar_vida, (10, 10))
+        self.window.blit(mostrar_trofeu, (10, 50))
+
+
+class Tiro_Jogador:
+    def __init__(self, x, y, mouse_x, mouse_y):
+        self.x = x
+        self.y = y
+        self.mouse_x = mouse_x
+        self.mouse_y = mouse_y
+        self.speed = 6
+        self.angle = math.atan2(y - mouse_y, x - mouse_x)
+        self.x_vel = math.cos(self.angle) * self.speed
+        self.y_vel = math.sin(self.angle) * self.speed
+
+    def update(self, display):
+        self.x -= int(self.x_vel)
+        self.y -= int(self.y_vel)
+        pg.draw.circle(display, (0, 0, 0), (self.x, self.y), 5)
+
+class Spritesheet:
+    def __init__(self, arquivo):
+        self.spritesheet = pg.image.load(arquivo).convert_alpha()
+        self.frames = self.pegar_frames(64, 64)  # gera todos os frames automaticamente
+
+        # organiza os frames por direção (ajuste aqui se necessário)
+        self.frames_direita = self.frames[0:3]
+        self.frames_esquerda = self.frames[3:6]
+        self.frames_baixo = self.frames[6:9]
+        self.frames_cima = self.frames[9:12]
+
+        self.tempo_por_frame = 100  # ms
+        self.ultimo_update = pg.time.get_ticks()
+        self.frame_index = 0
+        self.direcao = 'baixo'
+
+        self.animacoes = {
+            'direita': self.frames_direita,
+            'esquerda': self.frames_esquerda,
+            'cima': self.frames_cima,
+            'baixo': self.frames_baixo
+        }
+
+    def pegar_frames(self, largura_frame, altura_frame):
+        largura_total, altura_total = self.spritesheet.get_size()
+        frames = []
+        for y in range(0, altura_total, altura_frame):
+            for x in range(0, largura_total, largura_frame):
+                frame = pg.Surface((largura_frame, altura_frame), pg.SRCALPHA)
+                frame.blit(self.spritesheet, (0, 0), (x, y, largura_frame, altura_frame))
+                frames.append(frame)
+        return frames
+
+    def atualizar_animacao(self, direcao, movendo):
+        self.direcao = direcao
+        if movendo:
+            agora = pg.time.get_ticks()
+            if agora - self.ultimo_update > self.tempo_por_frame:
+                self.ultimo_update = agora
+                self.frame_index = (self.frame_index + 1) % len(self.animacoes[self.direcao])
+        else:
+            self.frame_index = 0
+    def pegar_imagem(self):
+        return self.animacoes[self.direcao][self.frame_index]
+
+
+class Fundo_fase:
+    def __init__(self, window, velocidade, cima, baixo, esquerda, direita):
+        self.window = window
+        self.velocidade = velocidade
+        self.cima = cima
+        self.baixo = baixo
+        self.esquerda = esquerda
+        self.direita = direita
+        self.fundo = pg.image.load('campo_de_futebol_2560x1440.png').convert()
+        self.x = -1280
+        self.y = -720
+        self.window.blit(self.fundo, (0, 0))
+    
+    def movimentacao(self):
+        keys = pg.key.get_pressed()
+        if keys[self.cima]:
+            self.y += self.velocidade
+        if keys[self.baixo]:
+            self.y -= self.velocidade
+        if keys[self.esquerda]:
+            self.x += self.velocidade
+        if keys[self.direita]:
+            self.x -= self.velocidade
+    def mostrar_area_visivel(self, x, y):
+        self.area_visivel = pg.Rect(-x, -y, 1280, 720)  # Defina a área visível do fundo
+        self.window.blit(self.fundo, (0, 0), self.area_visivel)  # Desenhe apenas a parte visível do fundo
