@@ -49,7 +49,12 @@ O Pygame é leve, fácil de aprender e ideal para protótipos rápidos de jogos 
 
 ## 5. Divisão de trabalho
 
-- 
+- Fábio: Fez a mecânica de tiro do jogador, o goleiro e a mecânica de tiro do goleiro, e ajudou nas imagens do jogo.
+- Dantte: Fez os coletáveis, ajustou a movimentação e os tiros, colocou e animou os sprites, fez as fases(tela de escolha, lobby e fases).
+- Guilherme: Ajustou a movimentação, fez os inimigos, a tela inicial e ajudou no geral com o desenvolvimento do personagem principal.
+- Júlia: Fez parte dos sprites, ajudou nos slides e deu suporte no ajuste da movimentação e das fases.
+- Sofia: Fez parte dos sprites, os slides, o README do projeto e ajudou no desenvolivimento dos inimigos.
+- Pedro: Fez parte dos sprites, ajudou nos slides e atuou dando suporte nos códigos.
 
 ---
 
