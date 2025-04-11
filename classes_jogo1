@@ -14,6 +14,7 @@ class Tela_de_escolha:
         self.nome_messi = ['Lionel Messi', (255, 620)]
         self.nome_cr7 = ['Cristiano Ronaldo', (502, 620)]
         self.nome_neymar = ['Neymar Jr.', (830, 620)]
+        self.player_escolhido = ''
         # checar se o boneco ja foi escolhido ou não
         self.escolheu = False
 
@@ -32,9 +33,9 @@ class Tela_de_escolha:
             if evento.key == pg.K_KP_ENTER or evento.key == pg.K_RETURN:
                 if self.opcao == '1':
                     self.player_escolhido = 'Messi'
-                if self.opcao == '1':
+                if self.opcao == '2':
                     self.player_escolhido = 'cr7'
-                if self.opcao == '1':
+                if self.opcao == '3':
                     self.player_escolhido = 'neymar'
                 self.escolheu = True
 
@@ -43,10 +44,12 @@ class Tela_de_escolha:
         self.window.blit(texto, (260, 100))
 
     def mostrar_imagem(self):
-        imagem_neymar = pg.draw.rect(self.window, (255, 255, 255), (800, 200, 200, 300))
-        imagem_messi = pg.draw.rect(self.window, (255, 255, 255), (240, 200, 200, 300))
-        imagem_cr7 = pg.draw.rect(self.window, (255, 255, 255), (520, 200, 200, 300))
-
+        imagem_neymar = pg.image.load('neymar tela de escolha.jpg')
+        imagem_messi = pg.image.load('messi tela de escolha.jpg')
+        imagem_cr7 = pg.image.load('cr7 tela de escolha.jpg')
+        self.window.blit(imagem_messi, (240, 200))
+        self.window.blit(imagem_cr7, (520, 200))
+        self.window.blit(imagem_neymar, (800, 200))
     def triangulos_de_escolha(self):
         if self.opcao == '1':
             texto_jogador = self.fonte_menor.render(self.nome_messi[0], True, ('White'))
@@ -71,7 +74,7 @@ class Lobby_fases:
         self.retangulo_1 = [305,540]
         self.retangulo_2 = [580, 540]
         self.retangulo_3 = [860, 540]
-        self.nome_fase1 = ['Bélgica', 295, 620]
+        self.nome_fase1 = ['Alemanha', 295, 620]
         self.nome_fase2 = ['Espanha', 572, 620]
         self.nome_fase3 = ['Itália', 870, 620]
         self.texto_fase1 = self.fonte_menor.render(self.nome_fase1[0], True, ('White'))
@@ -113,9 +116,31 @@ class Lobby_fases:
             self.retangulo_3[0] -= 2
 
     def renderizar_fases(self):
-        self.area_fase1 = pg.draw.rect(self.window, ('DARK RED'),(self.retangulo_1[0],self.retangulo_1[1],70,70))
-        self.area_fase2 = pg.draw.rect(self.window, ('DARK RED'), (self.retangulo_2[0],self.retangulo_2[1],70,70))
-        self.area_fase3 = pg.draw.rect(self.window, ('DARK RED'), (self.retangulo_3[0],self.retangulo_3[1],70,70))
+        self.area_fase1 = pg.Rect(self.retangulo_1[0], self.retangulo_1[1], 100, 50)
+        self.area_fase2 = pg.Rect(self.retangulo_2[0], self.retangulo_2[1], 100, 50)
+        self.area_fase3 = pg.Rect(self.retangulo_3[0], self.retangulo_3[1], 100, 50)   
+        self.imagem1 = pg.image.load('alemanha.png')
+        self.imagem2 = pg.image.load('spain.png')
+        self.imagem3 = pg.image.load('italia.png')
+
+        self.window.blit(self.imagem1, (self.retangulo_1[0], self.retangulo_1[1]))
+        self.window.blit(self.imagem2, (self.retangulo_2[0], self.retangulo_2[1]))
+        self.window.blit(self.imagem3, (self.retangulo_3[0], self.retangulo_3[1]))
+        # Desenhar os retângulos     
         self.window.blit(self.texto_fase1, (self.nome_fase1[1],self.nome_fase1[2]))
         self.window.blit(self.texto_fase2, (self.nome_fase2[1],self.nome_fase2[2]))
         self.window.blit(self.texto_fase3, (self.nome_fase3[1],self.nome_fase3[2]))
+
+class Tela_de_inicio:
+    def __init__(self,tela):
+        self.tela = tela
+        self.iniciar = False
+
+    def aparecer(self):
+        imagem = pg.image.load('lobby_1280x720.jpg')
+        self.tela.blit(imagem,(0,0))
+
+    def sumir(self,evento):
+        if evento.type == pg.KEYDOWN:
+            if evento.key == pg.K_RETURN:
+                self.iniciar = True
